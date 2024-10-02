@@ -1,3 +1,4 @@
+use std::fs;
 use std::process::exit;
 
 //hello version
@@ -29,7 +30,15 @@ fn main() {
                 exit(1);
             }
 
-            dbg!("valid source file!");
+            //read source code from source file
+            let mut code = match fs::read_to_string(&filename) {
+                Ok(code) => code,
+                Err(error) => {
+                  println!("Unable to open '{filename}'!");
+                  exit(1);
+                },
+            };
+            dbg!(code);
         }
     }else if args.len() == 0 {
         println!("hello {VERSION}");
