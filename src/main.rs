@@ -1,4 +1,6 @@
+use std::process::exit;
 
+//hello version
 const VERSION:&str = "1.0.0";
 fn main() {
     //cli args
@@ -15,7 +17,19 @@ fn main() {
             println!(" 3) hello help         --> prints this commands list");
             println!(" 4) hello <filename.h> --> compiles hello source file into x86 binary.");
         }else {
-            dbg!("compiling!");
+            //source file name
+            let filename = &args[0];
+
+            if !(filename.len() >= 3){
+                println!("'{filename}' is not a valid hello-source-file!");
+                exit(1);
+            }
+            else if &filename[filename.len()-2..] != ".h" {
+                println!("'{filename}' is not a valid hello-source-file!");
+                exit(1);
+            }
+
+            dbg!("valid source file!");
         }
     }else if args.len() == 0 {
         println!("hello {VERSION}");
