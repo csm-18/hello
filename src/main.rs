@@ -1,5 +1,8 @@
+mod compiler;
+
 use std::fs;
 use std::process::exit;
+use crate::compiler::compile;
 
 //hello version
 const VERSION:&str = "1.0.0";
@@ -8,6 +11,7 @@ fn main() {
     let mut args: Vec<String> = std::env::args().collect();
     args.remove(0);
 
+    //process cli args
     if args.len() == 1 {
         if args[0] == "version" {
             println!("hello {VERSION}");
@@ -30,15 +34,19 @@ fn main() {
                 exit(1);
             }
 
-            //read source code from source file
-            let mut code = match fs::read_to_string(&filename) {
+            //read code from source file
+            let code = match fs::read_to_string(&filename) {
                 Ok(code) => code,
-                Err(error) => {
+                Err(_error) => {
                   println!("Unable to open '{filename}'!");
                   exit(1);
                 },
             };
-            dbg!(code);
+
+            //compile to assembly
+            let output_asm = compile(&code);
+            dbg!(output_asm);
+
         }
     }else if args.len() == 0 {
         println!("hello {VERSION}");
