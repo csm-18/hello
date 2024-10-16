@@ -1,2 +1,2 @@
-# prints "har har mahadev!\n"
+# prints 'har har mahadev!\n'
 puts(`har har mahadev!`)
