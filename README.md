@@ -1,6 +1,10 @@
 # hello
 hello is a one function toy programming language.
 
+## Status
+Compiler reads source file!
+
+
 ## About
 A small language with just one function to print strings onto the screen.
 
