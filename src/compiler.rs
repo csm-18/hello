@@ -5,18 +5,44 @@ pub fn compile(src:&str) -> String {
     //output(assembly code)
     let output: String = "output!".to_owned();
 
-    //make tokens from src
     let tokens = lexer(src);
-    dbg!(tokens);
 
-    return output;
+    output
 }
 
 //creates tokens from source code
-fn lexer(src:&str) -> Vec<String>{
+fn lexer(src:&str) -> Vec<String> {
     //tokens
     let tokens: Vec<String> = vec!["tokens!".to_string(),];
 
+    //testing start
+    let error_index:usize = 30;
+    let (error_line,error_at) = char_position(&src,error_index);
+    println!("error at char {error_at} in line {error_line}:");
+    println!(" {:?}",&src[error_index..error_index+3]);
+    //testing end
+
 
     return tokens;
+}
+
+//returns line number and position a char in a string slice
+fn char_position(text:&str,char_index:usize) -> (usize,usize) {
+    let mut line_number = 1;
+    let mut line_index = 0;
+    let mut position = 1;
+
+    let mut x:usize= 0;
+    while x < char_index {
+        if &text[x..x+1] == "\n" {
+            line_number += 1;
+            line_index = x;
+        }
+        x+=1;
+    }
+
+    position += char_index - line_index;
+
+
+    (line_number, position)
 }

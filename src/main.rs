@@ -45,7 +45,6 @@ fn main() {
 
             //compile to assembly
             let output_asm = compile(&code);
-            dbg!(output_asm);
 
         }
     }else if args.len() == 0 {
