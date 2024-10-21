@@ -1,2 +1,5 @@
-# prints 'har har mahadev!\n'
-puts(`har har mahadev!`)
+// Hello World Program
+
+fn main() {
+  print(`Hello World!`)
+}
