@@ -48,6 +48,8 @@ fn lexer(src:&str) -> Vec<String> {
             if no_newline {
                 return tokens;
             }
+        } else if &src[x..x+1] == "(" || &src[x..x+1] == ")" || &src[x..x+1] == "{" || &src[x..x+1] == "}" {
+            tokens.push(src[x..x+1].to_string());
         }
         x += 1;
     }
