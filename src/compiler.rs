@@ -15,12 +15,26 @@ fn lexer(src:&str) -> Vec<String> {
     //tokens
     let tokens: Vec<String> = vec!["tokens!".to_string(),];
 
-    //testing start
-    let error_index:usize = 30;
-    let (error_line,error_at) = char_position(&src,error_index);
-    println!("error at char {error_at} in line {error_line}:");
-    println!(" {:?}",&src[error_index..error_index+3]);
-    //testing end
+    let mut x = 0;
+    while x < src.len() {
+        if &src[x..x+1] == "/" && &src[x+1..x+2] == "/" {
+            let mut no_newline = true;
+            let mut y = x + 2;
+            while y < src.len() {
+                if &src[y..y+1] == "\n" {
+                    dbg!(&src[y+1..]);
+                    no_newline = false;
+                    x = y;
+                    break;
+                }
+                y += 1;
+            }
+            if no_newline {
+                return tokens;
+            }
+        }
+        x += 1;
+    }
 
 
     return tokens;
