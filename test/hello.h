@@ -1,5 +1,5 @@
 // Hello World Program
 
-fn main() {
-  print(`Hello World!`)
+fun main() {
+  print(`hello!\n`)
 }
