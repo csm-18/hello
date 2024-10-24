@@ -1,21 +1,19 @@
-//compiler.rs : contains actual compiler code
+/// Contains compile() and other related functions.
 
 use std::process::exit;
 
-//converts hello code into assembly and returns it
 pub fn compile(src:&str) -> String {
     //output(assembly code)
     let output: String = "output!".to_owned();
 
     let tokens = lexer(src);
     dbg!(tokens);
+
     output
 }
 
 
-
-
-//create tokens from source code
+/* Lexical Analysis Start */
 #[derive(Debug)]
 enum Token {
     START,
@@ -24,13 +22,13 @@ enum Token {
     RIGHT_PAREN(String), //right parenthesis
     LEFT_BRACE(String),
     RIGHT_BRACE(String),
-    KEYWORD(String),
+    FUN_KEYWORD, //fun keyword
     ID(String),          //identifier
+    SPACE,               //whitespace char (' ')
+    NEWLINE,             //newline char ('\n')
     END,
 }
 fn lexer(src:&str) -> Vec<Token> {
-
-
     //tokens
     let mut tokens: Vec<Token> = vec![Token::START,];
 
@@ -69,44 +67,80 @@ fn lexer(src:&str) -> Vec<Token> {
             if no_newline {
                 return tokens;
             }
-        } else if &src[x..x+1] == "(" || &src[x..x+1] == ")" || &src[x..x+1] == "{" || &src[x..x+1] == "}" {
+        } else if &src[x..x+1] == "(" || &src[x..x+1] == ")" || &src[x..x+1] == "{" || &src[x..x+1] == "}" || &src[x..x+1] == " " || &src[x..x+1] == "\n" {
             match &src[x..x + 1] {
-                "(" => tokens.push(Token::LEFT_PAREN("(".to_string())),
-                ")" => tokens.push(Token::RIGHT_PAREN(")".to_string())),
-                "{" => tokens.push(Token::LEFT_BRACE("{".to_string())),
-                "}" => tokens.push(Token::RIGHT_BRACE("}".to_string())),
+                "(" =>  tokens.push(Token::LEFT_PAREN("(".to_string())),
+                ")" =>  tokens.push(Token::RIGHT_PAREN(")".to_string())),
+                "{" =>  tokens.push(Token::LEFT_BRACE("{".to_string())),
+                "}" =>  tokens.push(Token::RIGHT_BRACE("}".to_string())),
+                " " =>  tokens.push(Token::SPACE),
+                "\n" => tokens.push(Token::NEWLINE),
                 _ => exit(1),
             }
+        }else if valid_word(&src[x..x+1]) {
+            let mut word: String = "".to_string();
+            let mut temp= "".to_string();
+
+            let mut start = true;
+            let mut y = x;
+            while start || valid_word(&temp.clone()) {
+                start = false;
+                word = temp.clone();
+
+                temp.insert_str(temp.len(),&src[y..y+1]);
+               y += 1;
+            }
+
+            match word.as_str() {
+                "fun" => {
+                    tokens.push(Token::FUN_KEYWORD);
+                    x  = y - 1;
+                },
+                _ => {
+                    if &word[0..1] == "0" || &word[0..1] == "1" || &word[0..1] == "2" || &word[0..1] == "3" || &word[0..1] == "4"  || &word[0..1] == "5" || &word[0..1] == "6" || &word[0..1] == "7" || &word[0..1] == "8" || &word[0..1] == "9"  {
+                        let (line, error_at) = char_position(&src,x);
+                        println!("Token Error at {error_at} on line {line}.");
+                        exit(1);
+                    }else {
+                        tokens.push(Token::ID(word));
+                        x = y - 1;
+                    }
+                }
+            }
+
         }
-        // } else {
-        //     //An identifier is made of letters
-        //     let letters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','_','0','1','2','3','4','5','6','7','8','9'];
-        //     let mut token_error = true;
-        //
-        //     let mut temp_word = "";
-        //
-        //
-        //     if(token_error){
-        //         println!("Token Error at {error_at} on line {line}.");
-        //         exit(1);
-        //     }
-        // }
+
         x += 1;
     }
 
-
+    tokens.push(Token::END);
     return tokens;
 }
 
-//find line number and position a char in a string slice
-fn char_position(text:&str,char_index:usize) -> (usize,usize) {
+fn valid_word(word: &str) -> bool {
+    let mut valid = false;
+    for char in word.chars() {
+        match char {
+            '_'|'0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'a'|'b'|'c'|'d'|'e'|'f'|'g'|'h'|'i'|'j'|'k'|'l'|'m'|'n'|'o'|'p'|'q'|'r'|'s'|'t'|'u'|'v'|'w'|'x'|'y'|'z' => valid = true,
+            _ => {
+                valid = false;
+                return valid;
+            },
+        }
+    }
+    return valid;
+}
+/* Lexical Analysis End */
+
+//find line number and position of a char in a string slice
+fn char_position(source_code:&str,char_index:usize) -> (usize,usize) {
     let mut line_number = 1;
     let mut line_index = 0;
     let mut position = 0;
 
     let mut x:usize= 0;
     while x < char_index {
-        if &text[x..x+1] == "\n" {
+        if &source_code[x..x+1] == "\n" {
             line_number += 1;
             line_index = x;
         }
@@ -114,7 +148,6 @@ fn char_position(text:&str,char_index:usize) -> (usize,usize) {
     }
 
     position = char_index - line_index;
-
 
     (line_number, position)
 }
